@@ -13,47 +13,35 @@ pipeline {
 				echo 'Diplomado DevOps!'
 			}
 		}
-		stage('List') {
-			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-					sh 'ls'
-				}
-			}
-		}
 	    stage('Compile') {
 			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-					sh './mvnw clean compile -e'
-				}
+				sh './mvnw clean compile -e'
 			}
 		}
 		stage('Test') {
 			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-					sh './mvnw clean test -e'
-				}
+				sh './mvnw clean test -e'
 			}
 		}
 		stage('Package') {
 			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-					sh './mvnw clean package -e'
-				}
+				sh './mvnw clean package -e'
+			}
+		}
+		stage('SonarQube analysis') {
+			withSonarQubeEnv( installationName: 'sonar') { // You can override the credential to be used
+				sh  './mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
 			}
 		}
 	    stage('Run') {
 			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-					sh 'nohup bash ./mvnw spring-boot:run &'
-				}
+				sh 'nohup bash ./mvnw spring-boot:run &'
 			}
 		}
 		stage('Curl') {
 			steps {
-				dir('/Users/selyt2020/Documents/GitHub/ejemplo-maven'){
-				    sh 'sleep 20'
-					sh 'curl -X GET http://localhost:8081/rest/mscovid/test?msg=testing &'
-				}
+				sh 'sleep 20'
+				sh 'curl -X GET http://localhost:8081/rest/mscovid/test?msg=testing &'
 			}
 		}
 		stage('End') {
